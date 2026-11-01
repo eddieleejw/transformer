@@ -1,8 +1,8 @@
 class Block(nn.Module):
 
-  def __init__(self, embedding_dim, num_heads, dropout):
+  def __init__(self, embedding_dim, num_heads, dropout, mode):
     super().__init__()
-    self.sa = MultiHeadAttention(embedding_dim, num_heads, dropout)
+    self.sa = MultiHeadAttention(embedding_dim, num_heads, dropout, mode = mode)
     self.ffwd = FeedForward(embedding_dim, dropout)
     self.ln1 = nn.LayerNorm(embedding_dim)
     self.ln2 = nn.LayerNorm(embedding_dim)

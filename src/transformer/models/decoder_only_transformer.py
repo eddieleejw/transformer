@@ -9,7 +9,7 @@ class DecoderOnlyTransformer(nn.Module):
     self.token_embedding_table = nn.Embedding(vocab_size, embedding_dim)
     self.position_embedding_table = nn.Embedding(block_size, embedding_dim)
 
-    self.sa_layers = nn.Sequential(*[Block(embedding_dim, num_heads, dropout) for _ in range(num_blocks)])
+    self.sa_layers = nn.Sequential(*[Block(embedding_dim, num_heads, dropout, mode="decode") for _ in range(num_blocks)])
     self.ln = nn.LayerNorm(embedding_dim)
     self.ll = nn.Linear(embedding_dim, vocab_size)
 

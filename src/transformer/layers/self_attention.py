@@ -38,10 +38,13 @@ class AttentionHead(nn.Module):
 
 class MultiHeadAttention(nn.Module):
 
-  def __init__(self, embedding_dim, num_heads, dropout):
+  def __init__(self, embedding_dim, num_heads, dropout, mode: Literal["decode", "encode"]):
     super().__init__()
 
     assert embedding_dim % num_heads == 0, f"Embedding dimension ({embedding_dim}) must be divisible by number of heads ({num_heads})"
+    assert mode in ["decode", "encode"], f"Mode ({mode}) must be in ['decode', 'encode']"
+
+    self.mode = mode
 
     self.embedding_dim = embedding_dim
     self.num_heads = num_heads
@@ -77,8 +80,11 @@ class MultiHeadAttention(nn.Module):
     v_vec = v_vec.transpose(1, 2) # (batch_size, num_heads, block_size, head_dim)
 
     weights = (q_vec @ k_vec.transpose(-2, -1))  * (self.head_dim ** -0.5) # (batch_size, num_heads, block_size, block_size)
-    mask = torch.tril(torch.ones(block_size, block_size, device=x.device))
-    weights = weights.masked_fill(mask==0, -torch.inf)
+
+    if self.mode == "decode":
+      mask = torch.tril(torch.ones(block_size, block_size, device=x.device))
+      weights = weights.masked_fill(mask==0, -torch.inf)
+
     weights = torch.softmax(weights, dim = -1) # (batch_size, num_heads, block_size, block_size)
     weights = self.dropout1(weights)
 
