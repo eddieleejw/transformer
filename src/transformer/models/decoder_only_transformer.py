@@ -14,7 +14,7 @@ class DecoderOnlyTransformer(nn.Module):
     self.ln = nn.LayerNorm(embedding_dim)
     self.ll = nn.Linear(embedding_dim, vocab_size)
 
-  def forward(self, x, key_tokens = None, pad_id = None):
+  def forward(self, x, pad_id = None):
     '''
     x has shape (batch_size, sequence length <= block_size)
     '''
@@ -23,9 +23,12 @@ class DecoderOnlyTransformer(nn.Module):
 
     out = token_embeddings + pos_embeddings
 
+    if pad_id is None:
+      x = None # forget x
+
     # out = self.sa_layers(out) # (batch_size, block_size, embedding_dim)
     for layer in self.sa_layers:
-      out = layer(out, key_tokens, pad_id)
+      out = layer(out, x, pad_id)
     out = self.ln(out)
     out = self.ll(out) # (batch_size, block_size, vocab_size)
 
