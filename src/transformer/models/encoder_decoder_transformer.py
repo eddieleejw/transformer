@@ -12,7 +12,7 @@ class EncoderDecoderTransformer(nn.Module):
     self.encoder = EncoderOnlyTransformer(y_vocab_size, y_embedding_dim, y_block_size, num_enc_sa_heads, num_enc_blocks, dropout)
 
     ca_args = [x_embedding_dim, y_embedding_dim, num_dec_ca_heads, dec_ca_head_dim, dec_ca_value_dim, dropout]
-    self.a_layers = nn.ModuleList(*[EncoderDecoderBlock(x_embedding_dim, num_dec_sa_heads, dropout, ca_args) for _ in range(num_dec_blocks)])
+    self.a_layers = nn.ModuleList([EncoderDecoderBlock(x_embedding_dim, num_dec_sa_heads, dropout, ca_args) for _ in range(num_dec_blocks)])
 
     self.token_embedding_table = nn.Embedding(x_vocab_size, x_embedding_dim)
     self.position_embedding_table = nn.Embedding(x_block_size, x_embedding_dim)
@@ -45,4 +45,4 @@ class EncoderDecoderTransformer(nn.Module):
     out = self.ln(out) # (batch_size, x_block_size, x_embedding_dim)
     out = self.proj(out) # (batch_size, x_block_size, x_vocab_size)
 
-    return out   
+    return out
