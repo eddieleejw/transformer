@@ -7,13 +7,13 @@ class Block(nn.Module):
     self.ln1 = nn.LayerNorm(embedding_dim)
     self.ln2 = nn.LayerNorm(embedding_dim)
 
-  def forward(self, x):
+  def forward(self, x, key_tokens = None, pad_id = None):
     '''
     x has shape (batch_size, block_size, embedding_dim)
 
     output has shape (batch_size, block_size, embedding_dim)
     '''
-    x = x + self.sa(self.ln1(x)) # skip connection
+    x = x + self.sa(self.ln1(x), key_tokens, pad_id) # skip connection
     x = x + self.ffwd(self.ln2(x))
 
     return x

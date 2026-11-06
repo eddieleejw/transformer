@@ -9,7 +9,7 @@ class EncoderDecoderBlock(nn.Module):
     self.ln2 = nn.LayerNorm(x_embedding_dim)
     self.ln3 = nn.LayerNorm(x_embedding_dim)
 
-  def forward(self, x, y):
+  def forward(self, x, y, x_key_tokens = None, x_pad_id = None, y_key_tokens = None, y_pad_id = None):
     '''
     x has shape (batch_size, x_block_size, x_embedding_dim)
 
@@ -17,8 +17,8 @@ class EncoderDecoderBlock(nn.Module):
 
     output has shape (batch_size, x_block_size, x_embedding_dim)
     '''
-    x = x + self.sa(self.ln1(x)) # skip connection
-    x = x + self.ca(self.ln2(x), y)
+    x = x + self.sa(self.ln1(x), x_key_tokens, x_pad_id) # skip connection
+    x = x + self.ca(self.ln2(x), y, y_key_tokens, y_pad_id)
     x = x + self.ffwd(self.ln3(x))
 
     return x

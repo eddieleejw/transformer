@@ -58,12 +58,16 @@ class MultiHeadAttention(nn.Module):
     self.dropout1 = nn.Dropout(dropout)
     self.dropout2 = nn.Dropout(dropout)
 
-  def forward(self, x):
+  def forward(self, x, key_tokens = None, pad_id = None):
     '''
-    x has shape (batch_size, block_size, embedding_dim)
+    args:
+      x: has shape (batch_size, block_size, embedding_dim)
+      key_tokens: is None if padding is not used, else is the original sequence of token ids as a tensor of shape (batch_size, block_size)
+      pad_id: is None if padding is not used, else is the id of the padding token
     '''
     batch_size, block_size, embedding_dim = x.shape
 
+    assert (key_tokens is None) == (pad_id is None), f"key_tokens is None is {key_tokens is None} while pad_id is none is {pad_id is None}"
     assert embedding_dim == self.embedding_dim, f"Dimension of x ({embedding_dim}) doesn't match embedding dimension of multihead attention block ({self.embedding_dim})"
 
     q_vec = self.query_matrix(x) # (batch_size, block_size, embedding_dim)
@@ -79,11 +83,15 @@ class MultiHeadAttention(nn.Module):
     k_vec = k_vec.transpose(1, 2) # (batch_size, num_heads, block_size, head_dim)
     v_vec = v_vec.transpose(1, 2) # (batch_size, num_heads, block_size, head_dim)
 
-    weights = (q_vec @ k_vec.transpose(-2, -1))  * (self.head_dim ** -0.5) # (batch_size, num_heads, block_size, block_size)
+    weights = (q_vec @ k_vec.transpose(-2, -1))  * (self.head_dim ** -0.5) # (batch_size, num_heads, block_size, block_size), each row is the weights to be added for a given query vector
 
     if self.mode == "decode":
       mask = torch.tril(torch.ones(block_size, block_size, device=x.device))
       weights = weights.masked_fill(mask==0, -torch.inf)
+
+    if key_tokens is not None:
+      padding_mask = (key_tokens == pad_id)[:, None, None, :] # (batch_size, 1, 1, block_size)
+      weights = weights.masked_fill(padding_mask, -torch.inf)
 
     weights = torch.softmax(weights, dim = -1) # (batch_size, num_heads, block_size, block_size)
     weights = self.dropout1(weights)

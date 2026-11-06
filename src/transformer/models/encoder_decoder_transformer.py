@@ -20,7 +20,7 @@ class EncoderDecoderTransformer(nn.Module):
     self.ln = nn.LayerNorm(x_embedding_dim)
     self.proj = nn.Linear(x_embedding_dim, x_vocab_size)
 
-  def forward(self, x, y):
+  def forward(self, x, y, x_key_tokens = None, x_pad_id = None, y_key_tokens = None, y_pad_id = None):
     '''
     x has shape (batch_size, x_block_size) with values in [0, x_vocab_size)
     y has shape (batch_size, y_block_size) with values in [0, y_vocab_size)
@@ -33,7 +33,7 @@ class EncoderDecoderTransformer(nn.Module):
     assert x_block_size <= self.x_block_size
     assert y_block_size <= self.y_block_size
 
-    y = self.encoder(y) # (batch_size, y_block_size, y_embedding_dim)
+    y = self.encoder(y, y_key_tokens, y_pad_id) # (batch_size, y_block_size, y_embedding_dim)
 
     token_embeddings = self.token_embedding_table(x) # (batch_size, x_block_size, x_embedding_dim)
     position_embeddings = self.position_embedding_table(torch.arange(x_block_size, device=x.device)) # (batch_size, x_block_size, x_embedding_dim)
@@ -41,7 +41,7 @@ class EncoderDecoderTransformer(nn.Module):
     out = token_embeddings + position_embeddings # (batch_size, x_block_size, x_embedding_dim)
 
     for layer in self.a_layers:
-      out = layer(out, y) # (batch_size, x_block_size, x_embedding_dim)
+      out = layer(out, y, x_key_tokens, x_pad_id, y_key_tokens, y_pad_id) # (batch_size, x_block_size, x_embedding_dim)
     out = self.ln(out) # (batch_size, x_block_size, x_embedding_dim)
     out = self.proj(out) # (batch_size, x_block_size, x_vocab_size)
 

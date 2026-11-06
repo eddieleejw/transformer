@@ -9,10 +9,11 @@ class EncoderOnlyTransformer(nn.Module):
     self.token_embedding_table = nn.Embedding(vocab_size, embedding_dim)
     self.position_embedding_table = nn.Embedding(block_size, embedding_dim)
 
-    self.sa_layers = nn.Sequential(*[Block(embedding_dim, num_heads, dropout, mode="encode") for _ in range(num_blocks)])
+    # self.sa_layers = nn.Sequential(*[Block(embedding_dim, num_heads, dropout, mode="encode") for _ in range(num_blocks)])
+    self.sa_layers = nn.ModuleList([Block(embedding_dim, num_heads, dropout, mode="encode") for _ in range(num_blocks)])
     self.ln = nn.LayerNorm(embedding_dim)
 
-  def forward(self, x):
+  def forward(self, x, key_tokens = None, pad_id = None):
     '''
     x has shape (batch_size, sequence length <= block_size)
     '''
@@ -20,7 +21,8 @@ class EncoderOnlyTransformer(nn.Module):
     pos_embeddings = self.position_embedding_table(torch.arange(x.shape[1], device=x.device))
 
     out = token_embeddings + pos_embeddings
-    out = self.sa_layers(out) # (batch_size, block_size, embedding_dim)
+    for layer in self.sa_layers:
+      out = layer(out, key_tokens, pad_id) # (batch_size, block_size, embedding_dim)
     out = self.ln(out)
 
     return out

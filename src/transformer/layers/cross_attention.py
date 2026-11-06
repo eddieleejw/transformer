@@ -25,10 +25,12 @@ class MultiHeadCrossAttention(nn.Module):
     self.dropout1 = nn.Dropout(dropout)
     self.dropout2 = nn.Dropout(dropout)
 
-  def forward(self, x, y):
+  def forward(self, x, y, key_tokens = None, pad_id = None):
     '''
     x has shape (batch_size, x_block_size, x_embedding_dim)
     y has shape (batch_size, y_block_size, y_embedding_dim)
+    key_tokens: is None if padding is not used, else is the original sequence of token ids for y as a tensor of shape (batch_size, y_block_size)
+    pad_id: is None if padding is not used, else is the id of the padding token
     '''
     x_batch_size, x_block_size, x_embedding_dim = x.shape
     y_batch_size, y_block_size, y_embedding_dim = y.shape
@@ -36,6 +38,7 @@ class MultiHeadCrossAttention(nn.Module):
     assert x_embedding_dim == self.x_embedding_dim, f"Dimension of x ({x_embedding_dim}) doesn't match x embedding dimension of multihead attention block ({self.x_embedding_dim})"
     assert y_embedding_dim == self.y_embedding_dim, f"Dimension of y ({y_embedding_dim}) doesn't match y embedding dimension of multihead attention block ({self.y_embedding_dim})"
     assert x_batch_size == y_batch_size, f"Batch size of x ({x_batch_size}) does not match y ({y_batch_size})"
+    assert (key_tokens is None) == (pad_id is None), f"key_tokens is None is {key_tokens is None} while pad_id is none is {pad_id is None}"
 
     batch_size = x_batch_size
 
@@ -53,6 +56,10 @@ class MultiHeadCrossAttention(nn.Module):
     v_vec = v_vec.transpose(1, 2) # (batch_size, num_heads, y_block_size, value_dim)
 
     weights = (q_vec @ k_vec.transpose(-2, -1))  * (self.head_dim ** -0.5) # (batch_size, num_heads, x_block_size, y_block_size)
+
+    if key_tokens is not None:
+      padding_mask = (key_tokens == pad_id)[:, None, None, :] # (batch_size, 1, 1, y_block_size)
+      weights = weights.masked_fill(padding_mask, -torch.inf)
 
     weights = torch.softmax(weights, dim = -1)
     weights = self.dropout1(weights)
