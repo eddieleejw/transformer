@@ -10,7 +10,7 @@ Shows how to combine layers to build a decode-only, encode-only, or encoder-deco
 
 ## German-to-English machine translation
 
-We use the encoder-decoder transformer architecture to train a German-to-English translation model.
+
 
 
 

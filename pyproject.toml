@@ -10,6 +10,7 @@ dependencies = [
     "torch",
     "tqdm",
     "numpy",
+    "datasets",
 ]
 
 [tool.hatch.build.targets.wheel]
