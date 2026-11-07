@@ -1,11 +1,18 @@
 [build-system]
-requires = ["hatchling >= 1.26"]
+requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
 name = "transformer"
 version = "0.1.0"
-description = "Transformer PyTorch implementation"
-requires-python = ">=3.12"
+requires-python = ">=3.10"
+dependencies = [
+    "torch",
+    "tqdm",
+]
 
-dependencies = []
+[tool.hatch.build.targets.wheel]
+packages = ["src/transformer"]
+
+[project.scripts]
+train_decoder = "transformer.train.train_decoder:main"

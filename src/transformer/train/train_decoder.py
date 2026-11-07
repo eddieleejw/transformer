@@ -2,10 +2,27 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from tqdm import tqdm
+from pathlib import Path
 
 from typing import Literal
 
-def train():
+from transformer.models.decoder_only_transformer import DecoderOnlyTransformer
+from transformer.data.data import get_batch
+
+def main():
+  embedding_dim = 64*6
+  num_heads = 6
+  block_size = 256
+  batch_size = 64
+  device = 'cuda' if torch.cuda.is_available() else 'cpu'
+  train_iters = 5000
+  print_iters = 500
+  lr = 3e-4
+  num_blocks = 6
+  dropout = 0.2
+  artifact_dir = Path("artifacts")
+
+
   m = DecoderOnlyTransformer(vocab_size, embedding_dim, block_size, num_heads, num_blocks, dropout).to(device)
   optimizer = torch.optim.AdamW(m.parameters(), lr=lr)
 
@@ -37,16 +54,16 @@ def train():
 
       m.train()
 
+    torch.save(
+      {
+        "model": m.state_dict(),
+        "optim": optimizer.state_dict(),
+        "epoch": train_iters,
+        "loss": loss.item()
+      },
+      artifact_dir / "decoder_checkpoint.pth"
+    )
+
+
 if __name__ == "__main__":
-  embedding_dim = 64*6
-  num_heads = 6
-  block_size = 256
-  batch_size = 64
-  device = 'cuda' if torch.cuda.is_available() else 'cpu'
-  train_iters = 500
-  print_iters = 500
-  lr = 3e-4
-  num_blocks = 6
-  dropout = 0.2
-  
-  train()
+  main()
