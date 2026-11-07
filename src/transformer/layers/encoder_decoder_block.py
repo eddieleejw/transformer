@@ -1,3 +1,6 @@
+import torch
+import torch.nn as nn
+
 class EncoderDecoderBlock(nn.Module):
 
   def __init__(self, x_embedding_dim, num_sa_heads, dropout, ca_args: list):

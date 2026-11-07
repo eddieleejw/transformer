@@ -1,3 +1,6 @@
+import torch
+import torch.nn as nn
+
 class FeedForward(nn.Module):
 
   def __init__(self, embedding_dim, dropout):

@@ -1,3 +1,8 @@
+import torch
+import torch.nn as nn
+
+from transformer.layers.block import Block
+
 class DecoderOnlyTransformer(nn.Module):
 
   def __init__(self, vocab_size, embedding_dim, block_size, num_heads, num_blocks, dropout):

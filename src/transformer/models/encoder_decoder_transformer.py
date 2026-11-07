@@ -1,3 +1,6 @@
+import torch
+import torch.nn as nn
+
 class EncoderDecoderTransformer(nn.Module):
 
   def __init__(self, x_embedding_dim, y_embedding_dim, x_block_size, y_block_size, x_vocab_size, y_vocab_size, num_enc_sa_heads, num_enc_blocks, num_dec_blocks, num_dec_sa_heads, num_dec_ca_heads, dec_ca_head_dim, dec_ca_value_dim, dropout):

@@ -1,3 +1,5 @@
+import torch
+
 def get_batch(data: torch.tensor, batch_size: int, block_size: int) -> tuple[torch.tensor, torch.tensor]:
   '''
   data has shape (n), and each value is an encoded token (i.e. an integer in [0, vocab_size))

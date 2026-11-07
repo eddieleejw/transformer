@@ -10,6 +10,24 @@ from transformer.models.decoder_only_transformer import DecoderOnlyTransformer
 from transformer.data.data import get_batch
 
 def main():
+
+  with open('data/tinyshakespeare/input.txt', 'r') as f:
+    text = f.read()
+
+  chars = sorted(list(set(text)))
+  stoi = {c:i for i,c in enumerate(chars)}
+  itos = {i:c for i,c in enumerate(chars)}
+
+  vocab_size = len(chars)
+  encode = lambda s: [stoi[c] for c in s]
+  decode = lambda l: ''.join([itos[i] for i in l])
+
+  train_size = 0.9
+  data = torch.tensor(encode(text), dtype=torch.long)
+  n = int(train_size * len(data))
+  train_data = data[:n]
+  val_data = data[n:]
+
   embedding_dim = 64*6
   num_heads = 6
   block_size = 256

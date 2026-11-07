@@ -1,3 +1,6 @@
+import torch
+import torch.nn as nn
+
 class MultiHeadCrossAttention(nn.Module):
 
   def __init__(

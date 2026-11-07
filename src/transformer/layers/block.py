@@ -1,3 +1,9 @@
+import torch
+import torch.nn as nn
+
+from transformer.layers.self_attention import MultiHeadAttention
+from transformer.layers.feedforward import FeedForward
+
 class Block(nn.Module):
 
   def __init__(self, embedding_dim, num_heads, dropout, mode):
