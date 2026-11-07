@@ -1,6 +1,10 @@
 import torch
 import torch.nn as nn
 
+from transformer.layers.cross_attention import MultiHeadCrossAttention
+from transformer.layers.self_attention import MultiHeadAttention
+from transformer.layers.feedforward import FeedForward
+
 class EncoderDecoderBlock(nn.Module):
 
   def __init__(self, x_embedding_dim, num_sa_heads, dropout, ca_args: list):

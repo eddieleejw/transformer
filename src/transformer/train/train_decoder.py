@@ -40,7 +40,6 @@ def main():
   dropout = 0.2
   artifact_dir = Path("artifacts")
 
-
   m = DecoderOnlyTransformer(vocab_size, embedding_dim, block_size, num_heads, num_blocks, dropout).to(device)
   optimizer = torch.optim.AdamW(m.parameters(), lr=lr)
 
