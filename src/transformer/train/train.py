@@ -1,3 +1,10 @@
+import torch
+import torch.nn as nn
+import torch.nn.functional as F
+from tqdm import tqdm
+
+from typing import Literal
+
 def train():
   m = DecoderOnlyTransformer(vocab_size, embedding_dim, block_size, num_heads, num_blocks, dropout).to(device)
   optimizer = torch.optim.AdamW(m.parameters(), lr=lr)

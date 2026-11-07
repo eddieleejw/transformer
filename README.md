@@ -6,6 +6,15 @@ Single tensor implementation of multi-headed attention. Implements self-attentio
 
 Shows how to combine layers to build a decode-only, encode-only, or encoder-decoder transformer.
 
+# Demo
+
+## German-to-English machine translation
+
+We use the encoder-decoder transformer architecture to train a German-to-English translation model.
+
+
+
+
 # References
 
 ## Papers
