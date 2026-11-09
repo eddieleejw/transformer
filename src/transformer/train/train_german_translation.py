@@ -1,7 +1,7 @@
 import torch
 from datasets import load_dataset
 from torch.nn.utils.rnn import pad_sequence
-import torch.functional as F
+import torch.nn.functional as F
 from tqdm import tqdm
 
 from transformer.models.encoder_decoder_transformer import EncoderDecoderTransformer
@@ -42,7 +42,11 @@ def get_de_en_dataset():
         'translations': translations,
         'sources': sources,
         'en_stoi': en_stoi,
-        'de_stoi': de_stoi
+        'de_stoi': de_stoi,
+        'en_decode': en_decode,
+        'de_decode': de_decode,
+        'x_vocab_size': x_vocab_size,
+        'y_vocab_size': y_vocab_size
     }
 
 def main():
@@ -53,6 +57,10 @@ def main():
     sources = data['sources']
     en_stoi = data['en_stoi']
     de_stoi = data['de_stoi']
+    en_decode = data['en_decode']
+    de_decode = data['de_decode']
+    x_vocab_size = data['x_vocab_size']
+    y_vocab_size = data['y_vocab_size']
 
 
     # model hyperparameters
@@ -106,7 +114,7 @@ def main():
 
     for _ in tqdm(range(train_iters)):
 
-        x, y, target = get_batches(batch_size)
+        x, y, target = get_batches(batch_size, sources, translations, de_stoi, en_stoi)
 
         logits = encdec(x, y, x_pad_id, y_pad_id)
 

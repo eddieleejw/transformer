@@ -1,9 +1,8 @@
-import torch.nn as nn
-
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from tqdm import tqdm
+from typing import Literal
 
 class AttentionHead(nn.Module):
 

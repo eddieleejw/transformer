@@ -71,15 +71,15 @@ def main():
 
       m.train()
 
-    torch.save(
-      {
-        "model": m.state_dict(),
-        "optim": optimizer.state_dict(),
-        "epoch": train_iters,
-        "loss": loss.item()
-      },
-      artifact_dir / "decoder_checkpoint.pth"
-    )
+  torch.save(
+    {
+      "model": m.state_dict(),
+      "optim": optimizer.state_dict(),
+      "epoch": train_iters,
+      "loss": loss.item()
+    },
+    artifact_dir / "decoder_checkpoint.pth"
+  )
 
 
 if __name__ == "__main__":

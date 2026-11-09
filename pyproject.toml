@@ -18,3 +18,4 @@ packages = ["src/transformer"]
 
 [project.scripts]
 train_decoder = "transformer.train.train_decoder:main"
+train_german_translation = "transformer.train.train_german_translation:main"
