@@ -2,17 +2,26 @@
 
 PyTorch implementation of the Transformer architecture.
 
-Implements multi-head attention using a single tensor operation, supporting both self-attention and cross-attention.
+Implements multi-head attention by computing all heads in parallel for both self-attention and cross-attention.
 
 Demonstrates how to combine these layers to build decoder-only, encoder-only, and encoder-decoder Transformers.
+
+# Quick Start
+
+Install [uv](https://docs.astral.sh/uv/) and run either command from the repository root:
+
+```bash
+uv run train_german_translation
+uv run train_decoder
+```
+
+The translation script downloads Multi30K on first use. The Shakespeare script uses the included Tiny Shakespeare dataset. Both scripts save checkpoints to `artifacts/`.
 
 # Demos
 
 ## German-to-English Machine Translation
 
-We use an encoder-decoder Transformer to train a German-to-English translation model with character-level tokenization. The model was trained for approximately 15 minutes on a Google Colab T4 GPU.
-
-All examples are taken from a held-out test set:
+We use an encoder-decoder Transformer to train a German-to-English translation model with character-level tokenization on the [Multi30K dataset](https://huggingface.co/datasets/bentrevett/multi30k). The examples below are from the held-out test set and use a model trained for approximately 15 minutes on a Google Colab T4 GPU.
 
 ```
 German: Drei Leute sitzen in einer Höhle.
