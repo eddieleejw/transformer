@@ -3,6 +3,7 @@ from datasets import load_dataset
 from torch.nn.utils.rnn import pad_sequence
 import torch.nn.functional as F
 from tqdm import tqdm
+from pathlib import Path
 
 from transformer.models.encoder_decoder_transformer import EncoderDecoderTransformer
 from transformer.data.german_translation import get_batches
@@ -52,6 +53,9 @@ def get_de_en_dataset():
 def main():
 
     data = get_de_en_dataset()
+
+    checkpoint_dir = Path("artifacts")
+    checkpoint_dir.mkdir(parents=True, exist_ok=True)
 
     translations = data['translations']
     sources = data['sources']
@@ -128,6 +132,7 @@ def main():
             print(loss.item())
 
 
+
     torch.save(
     {
         "model": encdec.state_dict(),
@@ -135,5 +140,5 @@ def main():
         "epoch": train_iters,
         "loss": loss.item()
         },
-        "artifacts/de_to_en_checkpoint.pth"
+        checkpoint_dir / "de_to_en_checkpoint.pth"
     )
